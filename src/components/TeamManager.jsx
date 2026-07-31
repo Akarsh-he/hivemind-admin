@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, Mail, Search, Users, Shield, ShieldAlert, Lock, Eye, EyeOff, Check, X } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Plus, Edit2, Trash2, Mail, Search, Users, Shield, ShieldAlert, Lock, Eye, EyeOff, Check, X, Upload, Loader2, Image as ImageIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
 const GithubIcon = (props) => (
   <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -36,6 +37,12 @@ export const TeamManager = ({
   const [editingUser, setEditingUser] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
 
+  const fileInputRef = useRef(null);
+  const [avatarPreview, setAvatarPreview] = useState('');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+  const [avatarInputMode, setAvatarInputMode] = useState('file'); // 'file' | 'url'
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -62,6 +69,7 @@ export const TeamManager = ({
 
   const openCreateModal = () => {
     setEditingUser(null);
+    const initialAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop';
     setFormData({
       name: '',
       email: '',
@@ -70,17 +78,22 @@ export const TeamManager = ({
       isDisplayedOnWebsite: true,
       designation: 'Software Engineer',
       bio: 'Full-stack software architect specializing in modern WebGL applications and scalable microservices.',
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
+      avatarUrl: initialAvatar,
       skills: 'React.js, Node.js, Express, Three.js, MongoDB',
       github: 'https://github.com',
       linkedin: 'https://linkedin.com',
       twitter: 'https://x.com'
     });
+    setAvatarPreview(initialAvatar);
+    setUploadError(null);
+    setUploadingAvatar(false);
+    setAvatarInputMode('file');
     setIsModalOpen(true);
   };
 
   const openEditModal = (user) => {
     setEditingUser(user);
+    const initialAvatar = user.avatarUrl || user.avatar || '';
     setFormData({
       name: user.name || '',
       email: user.email || '',
@@ -89,13 +102,66 @@ export const TeamManager = ({
       isDisplayedOnWebsite: Boolean(user.isDisplayedOnWebsite),
       designation: user.designation || user.roleTitle || 'Software Engineer',
       bio: user.bio || '',
-      avatarUrl: user.avatarUrl || user.avatar || '',
+      avatarUrl: initialAvatar,
       skills: Array.isArray(user.skills) ? user.skills.join(', ') : user.skills || '',
       github: user.socialLinks?.github || '',
       linkedin: user.socialLinks?.linkedin || '',
       twitter: user.socialLinks?.twitter || ''
     });
+    setAvatarPreview(initialAvatar);
+    setUploadError(null);
+    setUploadingAvatar(false);
+    setAvatarInputMode('file');
     setIsModalOpen(true);
+  };
+
+  const handleAvatarFileChange = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    // Validate image MIME type
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Invalid file format. Please select an image file (.jpg, .png, .webp, .svg, .gif).');
+      return;
+    }
+
+    // Validate size limit (5MB)
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      setUploadError('Image size exceeds 5MB limit. Please select a smaller image file.');
+      return;
+    }
+
+    setUploadError(null);
+
+    // Create local object URL for instant preview
+    const objectUrl = URL.createObjectURL(file);
+    setAvatarPreview(objectUrl);
+    setUploadingAvatar(true);
+
+    try {
+      const data = new FormData();
+      data.append('image', file);
+
+      const res = await api.post('/upload', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (res.data && (res.data.secure_url || res.data.url)) {
+        const uploadedUrl = res.data.secure_url || res.data.url;
+        setFormData((prev) => ({ ...prev, avatarUrl: uploadedUrl }));
+        setAvatarPreview(uploadedUrl);
+      } else {
+        setUploadError('Failed to obtain image URL from server.');
+      }
+    } catch (err) {
+      console.error('Error streaming image to Cloudinary:', err);
+      setUploadError(err.response?.data?.message || 'Failed to upload image to Cloudinary.');
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -629,17 +695,102 @@ export const TeamManager = ({
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-mono text-slate-400 mb-1">Avatar Image URL</label>
-                  <div className="flex gap-3 items-center">
-                    <input
-                      type="url"
-                      value={formData.avatarUrl}
-                      onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
-                      className="flex-1 px-3 py-2 bg-slate-950 border border-slate-800 focus:border-[#00f3ff] rounded-xl text-sm text-white focus:outline-none"
-                    />
-                    {formData.avatarUrl && (
-                      <img src={formData.avatarUrl} alt="Preview" className="w-9 h-9 object-cover rounded-full border border-white/10" />
-                    )}
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-[11px] font-mono text-slate-400">
+                      Profile Picture / Avatar *
+                    </label>
+                    <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-lg border border-slate-800 text-[10px] font-mono">
+                      <button
+                        type="button"
+                        onClick={() => setAvatarInputMode('file')}
+                        className={`px-2 py-0.5 rounded transition-colors ${avatarInputMode === 'file' ? 'bg-[#00f3ff]/20 text-[#00f3ff] font-bold' : 'text-slate-400 hover:text-white'}`}
+                      >
+                        Local Device File
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAvatarInputMode('url')}
+                        className={`px-2 py-0.5 rounded transition-colors ${avatarInputMode === 'url' ? 'bg-[#00f3ff]/20 text-[#00f3ff] font-bold' : 'text-slate-400 hover:text-white'}`}
+                      >
+                        Image URL
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-xl bg-slate-950/80 border border-slate-800">
+                    {/* Avatar Live Preview Box */}
+                    <div className="relative group w-20 h-20 rounded-2xl overflow-hidden border-2 border-[#00f3ff]/40 bg-slate-900 flex-shrink-0 shadow-lg">
+                      {avatarPreview || formData.avatarUrl ? (
+                        <img
+                          src={avatarPreview || formData.avatarUrl}
+                          alt="Avatar Preview"
+                          className="w-full h-full object-cover"
+                          onError={() => setAvatarPreview('https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop')}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-600">
+                          <ImageIcon className="w-8 h-8" />
+                        </div>
+                      )}
+
+                      {/* Uploading Spinner Overlay */}
+                      {uploadingAvatar && (
+                        <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center text-center p-1 z-10 animate-in fade-in">
+                          <Loader2 className="w-6 h-6 text-[#00f3ff] animate-spin mb-1" />
+                          <span className="text-[9px] font-mono text-[#00f3ff] font-bold">Uploading...</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Controls */}
+                    <div className="flex-1 min-w-0 space-y-2 w-full">
+                      {avatarInputMode === 'file' ? (
+                        <div>
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            accept="image/*"
+                            onChange={handleAvatarFileChange}
+                            className="hidden"
+                          />
+                          <div className="flex flex-wrap items-center gap-2">
+                            <button
+                              type="button"
+                              disabled={uploadingAvatar}
+                              onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                              className="px-3.5 py-2 bg-slate-900 border border-slate-700 hover:border-[#00f3ff] focus:border-[#00f3ff] rounded-xl text-xs font-mono text-white inline-flex items-center gap-2 transition-colors cursor-pointer hover:bg-slate-800 disabled:opacity-50"
+                            >
+                              <Upload className="w-3.5 h-3.5 text-[#00f3ff]" />
+                              <span>{uploadingAvatar ? 'Streaming to Cloudinary...' : 'Upload Image File'}</span>
+                            </button>
+                            <span className="text-[10px] font-mono text-slate-500">
+                              Max 5MB • JPG, PNG, WEBP, SVG
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <input
+                            type="url"
+                            value={formData.avatarUrl}
+                            onChange={(e) => {
+                              setFormData({ ...formData, avatarUrl: e.target.value });
+                              setAvatarPreview(e.target.value);
+                            }}
+                            placeholder="https://images.unsplash.com/..."
+                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 focus:border-[#00f3ff] rounded-xl text-xs text-white focus:outline-none font-mono"
+                          />
+                        </div>
+                      )}
+
+                      {/* Upload Error Alert */}
+                      {uploadError && (
+                        <p className="text-xs text-rose-400 font-mono bg-rose-500/10 border border-rose-500/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                          <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
+                          <span>{uploadError}</span>
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
 
