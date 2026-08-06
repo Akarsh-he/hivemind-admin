@@ -11,12 +11,12 @@ export const Login = ({ onLogin, loading, error }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden w-full">
       {/* Background Glow Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#00f3ff]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#9d4edd]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-[#00f3ff]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-[#9d4edd]/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="glass-panel max-w-md w-full p-8 rounded-3xl border border-[#00f3ff]/30 shadow-2xl relative z-10 space-y-6">
+      <div className="glass-panel max-w-md w-full p-6 sm:p-8 rounded-3xl border border-[#00f3ff]/30 shadow-2xl relative z-10 space-y-6">
         {/* Header Icon & Title */}
         <div className="text-center space-y-3">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#00f3ff] to-[#9d4edd] p-0.5 mx-auto shadow-lg shadow-[#00f3ff]/20">
@@ -76,7 +76,7 @@ export const Login = ({ onLogin, loading, error }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#00f3ff] to-[#9d4edd] text-slate-950 hover:opacity-90 shadow-lg shadow-[#00f3ff]/20 transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
+            className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#00f3ff] to-[#9d4edd] text-slate-950 hover:opacity-90 shadow-lg shadow-[#00f3ff]/20 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 min-h-[48px]"
           >
             <span>{loading ? 'Authenticating...' : 'Sign In to Dashboard'}</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

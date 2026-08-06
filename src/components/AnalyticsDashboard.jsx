@@ -68,14 +68,14 @@ export const AnalyticsDashboard = ({ stats, loading }) => {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8 w-full max-w-full overflow-x-hidden">
       {/* Header Banner */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
             Overview <span className="gradient-text">& Analytics</span>
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Real-time telemetry and business metrics across client portfolio and database models.
           </p>
         </div>
@@ -87,13 +87,13 @@ export const AnalyticsDashboard = ({ stats, loading }) => {
       </div>
 
       {/* Metric Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         {metricCards.map((card, idx) => {
           const Icon = card.icon;
           return (
             <div
               key={idx}
-              className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-[#00f3ff]/40 transition-all group"
+              className="glass-panel p-4 sm:p-5 rounded-2xl border border-white/10 hover:border-[#00f3ff]/40 transition-all group"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono text-slate-400">{card.title}</span>
@@ -106,7 +106,7 @@ export const AnalyticsDashboard = ({ stats, loading }) => {
               </div>
 
               <div className="mt-4">
-                <h3 className="text-3xl font-extrabold text-white tracking-tight">{card.value}</h3>
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">{card.value}</h3>
                 <div className="flex items-center gap-1.5 mt-2 text-xs font-mono text-slate-400">
                   <TrendingUp className="w-3.5 h-3.5 text-[#00f3ff]" />
                   <span>{card.trend}</span>
@@ -120,8 +120,8 @@ export const AnalyticsDashboard = ({ stats, loading }) => {
       {/* Recharts Analytics Graphs Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Monthly Inquiries Trend (AreaChart) */}
-        <div className="lg:col-span-2 glass-panel p-6 rounded-2xl border border-white/10">
-          <div className="flex items-center justify-between mb-6">
+        <div className="lg:col-span-2 glass-panel p-4 sm:p-6 rounded-2xl border border-white/10 overflow-hidden">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-6">
             <div>
               <h3 className="text-base font-bold text-white">Client Inquiry Volume</h3>
               <p className="text-xs text-slate-400">Monthly contact form submissions from public portfolio website</p>
@@ -131,7 +131,7 @@ export const AnalyticsDashboard = ({ stats, loading }) => {
             </span>
           </div>
 
-          <div className="h-72 w-full">
+          <div className="h-64 sm:h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={monthlyTrends} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
@@ -165,7 +165,7 @@ export const AnalyticsDashboard = ({ stats, loading }) => {
         </div>
 
         {/* Project Category Distribution (BarChart) */}
-        <div className="glass-panel p-6 rounded-2xl border border-white/10">
+        <div className="glass-panel p-4 sm:p-6 rounded-2xl border border-white/10 overflow-hidden">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-base font-bold text-white">Project Categories</h3>
@@ -173,7 +173,7 @@ export const AnalyticsDashboard = ({ stats, loading }) => {
             </div>
           </div>
 
-          <div className="h-72 w-full">
+          <div className="h-64 sm:h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={categoryBreakdown} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />

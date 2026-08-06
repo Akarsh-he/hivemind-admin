@@ -17,6 +17,7 @@ export function App() {
   const { admin, authLoading, loginError, login, logout, checkAuth } = useAuth();
   const [toast, setToast] = useState(null);
   const [isColdStarting, setIsColdStarting] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -26,6 +27,11 @@ export function App() {
     });
     return () => unsubscribe();
   }, []);
+
+  // Auto-close mobile drawer when route changes
+  useEffect(() => {
+    setIsMobileSidebarOpen(false);
+  }, [location.pathname]);
 
   // Data states
   const [stats, setStats] = useState(null);
@@ -269,7 +275,7 @@ export function App() {
   const unreadCount = inquiries.filter((i) => !i.read).length;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#0a0a0f] text-slate-100 flex flex-col font-sans overflow-x-hidden w-full relative">
       {isColdStarting && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-lg w-[90%] sm:w-auto animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="px-4 py-3 rounded-2xl bg-[#0a0a0f]/95 border border-[#00f3ff]/40 text-white shadow-[0_0_30px_rgba(0,243,255,0.25)] backdrop-blur-md flex items-center gap-3">
@@ -286,12 +292,21 @@ export function App() {
         </div>
       )}
 
-      <Navbar admin={admin} onLogout={handleLogout} />
+      <Navbar
+        admin={admin}
+        onLogout={handleLogout}
+        isMobileOpen={isMobileSidebarOpen}
+        onToggleSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
+      />
 
-      <div className="flex flex-1">
-        <Sidebar unreadCount={unreadCount} />
+      <div className="flex flex-1 relative w-full overflow-x-hidden">
+        <Sidebar
+          unreadCount={unreadCount}
+          isMobileOpen={isMobileSidebarOpen}
+          onCloseMobileSidebar={() => setIsMobileSidebarOpen(false)}
+        />
 
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto max-w-7xl">
+        <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto w-full max-w-7xl mx-auto min-w-0">
           <Routes>
             <Route path="/admin/overview" element={<AnalyticsDashboard stats={stats} loading={dataLoading} />} />
             

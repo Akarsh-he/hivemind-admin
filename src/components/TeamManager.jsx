@@ -585,18 +585,18 @@ export const TeamManager = ({
         </div>
       )}
 
-      {/* CREATE / EDIT UNIFIED MEMBER MODAL */}
+      {/* Create / Edit Unified Member Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="glass-panel max-w-2xl w-full p-6 rounded-2xl border border-[#00f3ff]/30 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="glass-panel max-w-xl w-full p-4 sm:p-6 rounded-2xl border border-[#00f3ff]/30 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto my-auto">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                 <Users className="w-4 h-4 text-[#00f3ff]" />
-                {editingUser ? 'Edit Unified Member Profile' : 'Create New Unified Team Member'}
+                {editingUser ? 'Edit Unified Member Profile' : 'Create New Member Account'}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-white text-xs font-mono px-3 py-1 rounded-lg bg-slate-800"
+                className="text-slate-400 hover:text-white text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 min-h-[36px]"
               >
                 Close
               </button>
@@ -604,9 +604,9 @@ export const TeamManager = ({
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Credentials & System Role */}
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
+              <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
                 <p className="text-xs font-mono uppercase text-[#00f3ff] font-bold">1. System Access & RBAC Permissions</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
                     <label className="block text-[11px] font-mono text-slate-400 mb-1">Full Name *</label>
                     <input
@@ -658,7 +658,7 @@ export const TeamManager = ({
               </div>
 
               {/* Public Portfolio Profile Details */}
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
+              <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-mono uppercase text-[#9d4edd] font-bold">2. Public Portfolio Profile Data</p>
                   <label className="flex items-center gap-2 text-xs font-mono text-white cursor-pointer">
@@ -719,7 +719,7 @@ export const TeamManager = ({
 
                   <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-xl bg-slate-950/80 border border-slate-800">
                     {/* Avatar Live Preview Box */}
-                    <div className="relative group w-20 h-20 rounded-2xl overflow-hidden border-2 border-[#00f3ff]/40 bg-slate-900 flex-shrink-0 shadow-lg">
+                    <div className="relative group w-20 h-20 rounded-2xl overflow-hidden border-2 border-[#00f3ff]/40 bg-slate-900 flex-shrink-0 shadow-lg mx-auto sm:mx-0">
                       {avatarPreview || formData.avatarUrl ? (
                         <img
                           src={avatarPreview || formData.avatarUrl}
@@ -753,18 +753,18 @@ export const TeamManager = ({
                             onChange={handleAvatarFileChange}
                             className="hidden"
                           />
-                          <div className="flex flex-wrap items-center gap-2">
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                             <button
                               type="button"
                               disabled={uploadingAvatar}
                               onClick={() => fileInputRef.current && fileInputRef.current.click()}
-                              className="px-3.5 py-2 bg-slate-900 border border-slate-700 hover:border-[#00f3ff] focus:border-[#00f3ff] rounded-xl text-xs font-mono text-white inline-flex items-center gap-2 transition-colors cursor-pointer hover:bg-slate-800 disabled:opacity-50"
+                              className="px-3.5 py-2 bg-slate-900 border border-slate-700 hover:border-[#00f3ff] focus:border-[#00f3ff] rounded-xl text-xs font-mono text-white flex items-center justify-center gap-2 transition-colors cursor-pointer hover:bg-slate-800 disabled:opacity-50 min-h-[40px]"
                             >
                               <Upload className="w-3.5 h-3.5 text-[#00f3ff]" />
                               <span>{uploadingAvatar ? 'Streaming to Cloudinary...' : 'Upload Image File'}</span>
                             </button>
-                            <span className="text-[10px] font-mono text-slate-500">
-                              Max 5MB • JPG, PNG, WEBP, SVG
+                            <span className="text-[10px] font-mono text-slate-500 text-center sm:text-left">
+                              Max 5MB • JPG, PNG, WEBP
                             </span>
                           </div>
                         </div>
@@ -829,17 +829,17 @@ export const TeamManager = ({
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-end gap-3 pt-3 border-t border-white/10">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl text-xs font-mono text-slate-400 hover:text-white bg-slate-800"
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-mono text-slate-400 hover:text-white bg-slate-800 min-h-[44px]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="glow-button px-6 py-2.5 rounded-xl text-xs font-bold text-white"
+                  className="w-full sm:w-auto glow-button px-6 py-2.5 rounded-xl text-xs font-bold text-white min-h-[44px]"
                 >
                   {editingUser ? 'Save Unified Member' : 'Create Unified Member'}
                 </button>
