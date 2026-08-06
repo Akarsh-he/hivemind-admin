@@ -32,7 +32,7 @@ export const Navbar = ({ admin, onLogout, isMobileOpen, onToggleSidebar }) => {
 
       <div className="flex items-center gap-3 sm:gap-5">
         <a
-          href={import.meta.env.VITE_PORTFOLIO_URL || 'http://localhost:5173'}
+          href={import.meta.env.VITE_PORTFOLIO_URL || 'https://hivemind-m20g.onrender.com'}
           target="_blank"
           rel="noopener noreferrer"
           className="hidden sm:flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-[#00f3ff] transition-colors px-3 py-1.5 rounded-lg border border-white/5 hover:border-[#00f3ff]/30"
